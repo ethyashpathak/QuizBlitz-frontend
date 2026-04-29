@@ -34,16 +34,25 @@ export default function QuizWorkspace() {
   const fetchQuiz = async () => {
     try {
       setLoading(true);
+
       const res = await api.get(`/quiz/${quizId}/`);
-      const quizData = res.data.quiz || res.data;
+      console.log("QUIZ API:", res.data);
+
+      const quizData = res.data.data.quiz;
+
       setQuiz(quizData);
-      setQuestions(quizData.questions || []);
+
+      setQuestions(quizData.Questions || []);
+
       setQuizFormData({
-        title: quizData.title,
-        description: quizData.description || '',
-        startTime: quizData.startTime ? new Date(quizData.startTime).toISOString().slice(0, 16) : '',
+        title: quizData.Title,
+        description: quizData.Description || '',
+        startTime: quizData.startTime
+          ? new Date(quizData.startTime).toISOString().slice(0, 16)
+          : '',
         isPermanent: quizData.isPermanent,
       });
+
     } catch (error) {
       console.error(error);
       navigate('/dashboard');
@@ -51,6 +60,7 @@ export default function QuizWorkspace() {
       setLoading(false);
     }
   };
+
 
   // --- Quiz Handlers ---
   const handleUpdateQuiz = async (e: React.FormEvent) => {
@@ -89,8 +99,14 @@ export default function QuizWorkspace() {
         await api.patch(`/quiz/questions/${quizId}/`, { questionId: editingQuestionId, ...questionFormData });
         toast.success('Question updated');
       } else {
-        // Add new (Bulk API supports array)
-        await api.post(`/quiz/questions/${quizId}/`, { questions: [questionFormData] });
+        const formattedQuestion = {
+          ...questionFormData,
+          options: questionFormData.options.map(opt => opt.text),
+        };
+
+        await api.post(`/quiz/questions/${quizId}/`, {
+          questions: [formattedQuestion],
+        });
         toast.success('Question added');
       }
       setQuestionModalOpen(false);
@@ -178,7 +194,7 @@ export default function QuizWorkspace() {
         </div>
         <div className="bg-gray-50 p-4 flex gap-6 text-sm font-medium text-gray-600 border-t border-gray-100">
           <div>Questions: <span className="text-gray-900 font-bold">{questions.length}</span></div>
-          <div>Total Points: <span className="text-gray-900 font-bold">{quiz.totalPoints || 0}</span></div>
+          <div>Total Points: <span className="text-gray-900 font-bold">{questions.length * 10 || 0}</span></div>
           <div>Status: <span className={`px-2 py-0.5 rounded text-xs font-bold ${quiz.isPermanent ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>{quiz.isPermanent ? 'Permanent' : 'Scheduled'}</span></div>
         </div>
       </div>

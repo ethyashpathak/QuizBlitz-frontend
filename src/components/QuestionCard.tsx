@@ -74,8 +74,8 @@ export const QuestionCard = ({
               <div
                 key={i}
                 className={`p-3 rounded-lg border-2 flex items-center gap-3 ${i === question.correctOption
-                    ? 'bg-green-50 border-green-200 text-green-800 font-medium'
-                    : 'bg-gray-50 border-transparent text-gray-700'
+                  ? 'bg-green-50 border-green-200 text-green-800 font-medium'
+                  : 'bg-gray-50 border-transparent text-gray-700'
                   }`}
               >
                 <div className={`w-6 h-6 rounded-full flex items-center justify-center text-sm font-bold ${i === question.correctOption ? 'bg-green-500 text-white' : 'bg-gray-200 text-gray-600'
@@ -92,12 +92,8 @@ export const QuestionCard = ({
 
           <div className="flex items-center gap-4 text-sm text-gray-500 font-medium pt-3 border-t border-gray-100">
             <div className="flex items-center gap-1.5">
-              <Clock size={16} />
-              {question.timer} seconds
-            </div>
-            <div className="flex items-center gap-1.5">
               <div className="w-4 h-4 rounded-full bg-yellow-100 flex items-center justify-center border border-yellow-300 text-yellow-600 text-[10px] font-bold">P</div>
-              {question.points} points
+              10 points
             </div>
           </div>
         </div>
