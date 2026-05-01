@@ -15,14 +15,13 @@ export interface Question {
   question: string;
   options: Option[];
   correctOption: number;
-  points: number;
-  timer: number; // in seconds
+  time: number; // in seconds
 }
 
 export interface Quiz {
   _id: string;
-  title: string;
-  description: string;
+  Title: string;
+  Description: string;
   roomCode: string;
   startTime: string; // ISO string
   isPermanent: boolean;

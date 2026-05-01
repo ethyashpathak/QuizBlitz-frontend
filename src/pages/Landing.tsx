@@ -4,7 +4,7 @@ import { Navigate } from 'react-router-dom';
 
 export default function Landing() {
   const { isAuthenticated } = useAuthStore();
-  
+
   if (isAuthenticated) {
     return <Navigate to="/dashboard" replace />;
   }
@@ -32,9 +32,13 @@ export default function Landing() {
 
         <button
           onClick={handleGoogleLogin}
-          className="w-full bg-white border-2 border-gray-200 text-gray-700 font-bold text-lg py-4 px-6 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm group"
+          className="w-full cursor-pointer bg-white border-2 border-gray-200 text-gray-700 font-bold text-lg py-4 px-6 rounded-xl flex items-center justify-center gap-3 hover:bg-gray-50 hover:border-gray-300 transition-all shadow-sm group"
         >
-          <img src="https://www.svgrepo.com/show/475656/google-color.svg" className="w-6 h-6 group-hover:scale-110 transition-transform" alt="Google Logo" />
+          <img
+            src="https://www.svgrepo.com/show/475656/google-color.svg"
+            className="w-6 h-6 group-hover:scale-110 transition-transform"
+            alt="Google Logo"
+          />
           Sign in with Google
         </button>
       </motion.div>
