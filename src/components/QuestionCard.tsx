@@ -41,15 +41,28 @@ export const QuestionCard = ({
         )}
 
         <div className="flex-1">
-          <div className="flex justify-between items-start">
-            <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
-              <span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md text-sm">
-                Q{index + 1}
-              </span>
-              {question.question}
-            </h4>
+          <div className="flex items-start gap-4">
 
-            <div className="flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+            {/* Left Side */}
+            <div className="flex-1 min-w-0">
+              <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center gap-2">
+                <span className="bg-gray-100 text-gray-600 px-2.5 py-1 rounded-md text-sm shrink-0">
+                  Q{index + 1}
+                </span>
+
+                <span className="break-words">
+                  {question.question}
+                </span>
+              </h4>
+            </div>
+
+            {/* Fixed Timer */}
+            <div className="shrink-0 px-3 py-1 bg-orange-50 text-orange-700 rounded-md text-sm font-semibold whitespace-nowrap">
+              ⏱ {question.time}s
+            </div>
+
+            {/* Fixed Buttons */}
+            <div className="shrink-0 flex gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
               {onEdit && (
                 <button
                   onClick={() => onEdit(question)}
@@ -58,6 +71,7 @@ export const QuestionCard = ({
                   <Edit2 size={18} />
                 </button>
               )}
+
               {onDelete && qId && (
                 <button
                   onClick={() => onDelete(qId)}
@@ -67,6 +81,7 @@ export const QuestionCard = ({
                 </button>
               )}
             </div>
+
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-4">
@@ -92,8 +107,8 @@ export const QuestionCard = ({
 
           <div className="flex items-center gap-4 text-sm text-gray-500 font-medium pt-3 border-t border-gray-100">
             <div className="flex items-center gap-1.5">
-              <div className="w-4 h-4 rounded-full bg-yellow-100 flex items-center justify-center border border-yellow-300 text-yellow-600 text-[10px] font-bold">P</div>
-              10 points
+              {/* <div className="w-4 h-4 rounded-full bg-yellow-100 flex items-center justify-center border border-yellow-300 text-yellow-600 text-[10px] font-bold">P</div>
+              10 points */}
             </div>
           </div>
         </div>

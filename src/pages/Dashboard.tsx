@@ -46,6 +46,10 @@ export default function Dashboard() {
       </div>
 
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {quizzes.map((quiz) => (
+          <QuizCard key={quiz._id} quiz={quiz} />
+        ))}
+        
         <motion.div
           whileHover={{ y: -5 }}
           initial={{ opacity: 0, scale: 0.9 }}
@@ -53,18 +57,14 @@ export default function Dashboard() {
         >
           <Link
             to="/quiz/create"
-            className="bg-indigo-50 border-2 border-dashed border-indigo-200 rounded-2xl h-full min-h-[320px] flex flex-col items-center justify-center text-indigo-600 hover:bg-indigo-100 hover:border-indigo-300 transition-all group"
+            className="bg-gray-200 border-2 border-dashed border-indigo-200 rounded-2xl h-full min-h-[320px] flex flex-col items-center justify-center text-indigo-600 hover:bg-indigo-100 hover:border-indigo-300 transition-all group"
           >
-            <div className="bg-white p-4 rounded-full shadow-sm mb-4 group-hover:scale-110 transition-transform">
+            <div className="bg-gray-200 p-4 rounded-full shadow-sm mb-4 group-hover:scale-110 transition-transform">
               <Plus size={32} />
             </div>
             <span className="font-bold text-lg">Create New Quiz</span>
           </Link>
         </motion.div>
-
-        {quizzes.map((quiz) => (
-          <QuizCard key={quiz._id} quiz={quiz} />
-        ))}
       </div>
 
       {quizzes.length === 0 && !loading && (

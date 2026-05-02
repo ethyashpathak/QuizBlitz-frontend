@@ -8,6 +8,13 @@ import { Loader2, Plus, Edit3, Trash2, ArrowLeft, Users, Settings, PlusCircle } 
 import toast from 'react-hot-toast';
 
 export default function QuizWorkspace() {
+  const emptyQuestion = {
+    question: '',
+    options: [{ text: '' }, { text: '' }, { text: '' }, { text: '' }],
+    correctOption: 0,
+    time: 0,
+  };
+
   const { quizId } = useParams<{ quizId: string }>();
   const navigate = useNavigate();
 
@@ -22,8 +29,8 @@ export default function QuizWorkspace() {
   const [isCohostModalOpen, setCohostModalOpen] = useState(false);
 
   // Forms state
-  const [quizFormData, setQuizFormData] = useState({ title: '', description: '', startTime: '', isPermanent: false });
-  const [questionFormData, setQuestionFormData] = useState<Question>({ question: '', options: [{ text: '' }, { text: '' }, { text: '' }, { text: '' }], correctOption: 0, points: 10, timer: 30 });
+  const [quizFormData, setQuizFormData] = useState({ Title: '', Description: '', startTime: '', isPermanent: false });
+  const [questionFormData, setQuestionFormData] = useState<Question>(emptyQuestion);
   const [cohostEmail, setCohostEmail] = useState('');
   const [editingQuestionId, setEditingQuestionId] = useState<string | null>(null);
 
@@ -45,8 +52,8 @@ export default function QuizWorkspace() {
       setQuestions(quizData.Questions || []);
 
       setQuizFormData({
-        title: quizData.Title,
-        description: quizData.Description || '',
+        Title: quizData.Title,
+        Description: quizData.Description || '',
         startTime: quizData.startTime
           ? new Date(quizData.startTime).toISOString().slice(0, 16)
           : '',
@@ -68,8 +75,9 @@ export default function QuizWorkspace() {
     try {
       const payload = {
         ...quizFormData,
-        startTime: quizFormData.startTime ? new Date(quizFormData.startTime).toISOString() : new Date().toISOString(),
+        // startTime: quizFormData.startTime ? new Date(quizFormData.startTime).toISOString() : new Date().toISOString(),
       };
+
       await api.patch(`/quiz/${quizId}/`, payload);
       toast.success('Quiz updated successfully');
       setEditQuizModalOpen(false);
@@ -96,7 +104,15 @@ export default function QuizWorkspace() {
     try {
       if (editingQuestionId) {
         // Edit existing
-        await api.patch(`/quiz/questions/${quizId}/`, { questionId: editingQuestionId, ...questionFormData });
+        await api.patch(`/quiz/questions/${quizId}/`, {
+          questions: [
+            {
+              _id: editingQuestionId,
+              ...questionFormData,
+              options: questionFormData.options.map(opt => opt.text)
+            }
+          ]
+        });
         toast.success('Question updated');
       } else {
         const formattedQuestion = {
@@ -132,10 +148,17 @@ export default function QuizWorkspace() {
   const openQuestionModal = (q?: Question) => {
     if (q) {
       setEditingQuestionId(q._id || q.id || null);
-      setQuestionFormData(q);
+      setQuestionFormData({
+        question: q.question || '',
+        options: q.options.map((opt: any) =>
+          typeof opt === 'string' ? { text: opt } : opt
+        ),
+        correctOption: q.correctOption ?? 0,
+        time: q.time ?? 30
+      });
     } else {
       setEditingQuestionId(null);
-      setQuestionFormData({ question: '', options: [{ text: '' }, { text: '' }, { text: '' }, { text: '' }], correctOption: 0, points: 10, timer: 30 });
+      setQuestionFormData(emptyQuestion);
     }
     setQuestionModalOpen(true);
   };
@@ -177,8 +200,8 @@ export default function QuizWorkspace() {
             <div className="inline-block bg-white/20 backdrop-blur-sm rounded-full px-3 py-1 text-xs font-bold border border-white/30 mb-3">
               Room Code: {quiz.roomCode}
             </div>
-            <h1 className="text-3xl font-extrabold mb-2">{quiz.title}</h1>
-            <p className="text-indigo-100 max-w-2xl">{quiz.description}</p>
+            <h1 className="text-3xl font-extrabold mb-2">{quiz.Title}</h1>
+            <p className="text-indigo-100 max-w-2xl">{quiz.Description}</p>
           </div>
           <div className="flex gap-2">
             <button onClick={() => setEditQuizModalOpen(true)} className="p-2 bg-white/10 hover:bg-white/20 rounded-lg backdrop-blur-sm transition-colors" title="Edit Quiz">
@@ -194,7 +217,7 @@ export default function QuizWorkspace() {
         </div>
         <div className="bg-gray-50 p-4 flex gap-6 text-sm font-medium text-gray-600 border-t border-gray-100">
           <div>Questions: <span className="text-gray-900 font-bold">{questions.length}</span></div>
-          <div>Total Points: <span className="text-gray-900 font-bold">{questions.length * 10 || 0}</span></div>
+          {/* <div>Total Points: <span className="text-gray-900 font-bold">{questions.length * 10 || 0}</span></div> */}
           <div>Status: <span className={`px-2 py-0.5 rounded text-xs font-bold ${quiz.isPermanent ? 'bg-green-100 text-green-700' : 'bg-orange-100 text-orange-700'}`}>{quiz.isPermanent ? 'Permanent' : 'Scheduled'}</span></div>
         </div>
       </div>
@@ -252,11 +275,11 @@ export default function QuizWorkspace() {
         <form onSubmit={handleUpdateQuiz} className="space-y-4">
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-1">Title</label>
-            <input required type="text" value={quizFormData.title} onChange={e => setQuizFormData({ ...quizFormData, title: e.target.value })} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+            <input required type="text" value={quizFormData.Title} onChange={e => setQuizFormData({ ...quizFormData, Title: e.target.value })} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
           </div>
           <div>
             <label className="block text-sm font-bold text-gray-700 mb-1">Description</label>
-            <textarea value={quizFormData.description} onChange={e => setQuizFormData({ ...quizFormData, description: e.target.value })} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
+            <textarea value={quizFormData.Description} onChange={e => setQuizFormData({ ...quizFormData, Description: e.target.value })} className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-indigo-500" />
           </div>
           <button type="submit" className="w-full bg-indigo-600 text-white font-bold py-3 rounded-lg hover:bg-indigo-700">Save Changes</button>
         </form>
@@ -294,13 +317,20 @@ export default function QuizWorkspace() {
 
           <div className="flex gap-4">
             <div className="flex-1">
-              <label className="block text-sm font-bold text-gray-700 mb-1">Points</label>
-              <input type="number" min="0" value={questionFormData.points} onChange={e => setQuestionFormData({ ...questionFormData, points: Number(e.target.value) })} className="w-full px-3 py-2 border rounded-lg" />
-            </div>
-            <div className="flex-1">
               <label className="block text-sm font-bold text-gray-700 mb-1">Time Limit (s)</label>
-              <select value={questionFormData.timer} onChange={e => setQuestionFormData({ ...questionFormData, timer: Number(e.target.value) })} className="w-full px-3 py-2 border rounded-lg">
-                {[10, 20, 30, 60, 90, 120].map(t => <option key={t} value={t}>{t} seconds</option>)}
+              <select
+                value={questionFormData.time}
+                onChange={e =>
+                  setQuestionFormData(prev => ({
+                    ...prev,
+                    time: Number(e.target.value)
+                  }))
+                }
+              >
+                <option value="">Select Time</option>
+                {[10, 20, 30, 60, 90, 120].map(t => (
+                  <option key={t} value={t}>{t} seconds</option>
+                ))}
               </select>
             </div>
           </div>
